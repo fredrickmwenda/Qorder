@@ -22,6 +22,7 @@
 firebase.json
 firestore.indexes.json
 firestore.rules
+storage.rules
 
 
 npm-debug.log*
