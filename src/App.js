@@ -18,6 +18,7 @@ import Checkout from './components/Checkout'
 import Item from './components/Item';
 import OrderHistory from './components/OrderHistory';
 import QRScannerComponent from './components/QRCodeScanner';
+import NotFound from './components/NotFound';
 import { Toaster } from 'react-hot-toast';
 
 
@@ -110,6 +111,7 @@ function App() {
           
           <Router>
             <Routes>
+              <Route path="*" element={<NotFound />}> </Route>
               <Route exact path='/' element={<QRScannerComponent/>}> </Route>
               <Route  path="/home" element={<Restaurant addToCart={addToCart} />}> </Route>
               <Route path="/item/:id" element={<Item addToCart={addToCart} />} />
