@@ -3,16 +3,8 @@ import { getAuth,  createUserWithEmailAndPassword, signInWithEmailAndPassword, s
 // import firebaseConfig from './config';
 import { getFirestore, collection, query} from 'firebase/firestore';
 import {  where, getDocs, addDoc, setDoc, doc } from 'firebase/firestore';
+import { firebaseConfig } from './config';
 
-const firebaseConfig = {
-    apiKey: "AIzaSyCAq62I57Gg0HvufF-Jc8BOiA9M8veONfA",
-    authDomain: "tap4menu-2541a.firebaseapp.com",
-    projectId: "tap4menu-2541a",
-    storageBucket: "tap4menu-2541a.appspot.com",
-    messagingSenderId: "626617995782",
-    appId: "1:626617995782:web:f417ecfcc8b41aea106987",
-    measurementId: "G-DC0PXF6FN1"
-  };
 
   
 const app = initializeApp(firebaseConfig);

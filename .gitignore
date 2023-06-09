@@ -24,6 +24,7 @@ firestore.indexes.json
 firestore.rules
 storage.rules
 
+src/Firebase/config.js
 
 npm-debug.log*
 yarn-debug.log*

@@ -1,15 +1,6 @@
 import firebase from 'firebase';
 import { getFirestore } from 'firebase/firestore';
-// import { firebaseConfig } from './config';
-const firebaseConfig = {
-  apiKey: "AIzaSyCAq62I57Gg0HvufF-Jc8BOiA9M8veONfA",
-  authDomain: "tap4menu-2541a.firebaseapp.com",
-  projectId: "tap4menu-2541a",
-  storageBucket: "tap4menu-2541a.appspot.com",
-  messagingSenderId: "626617995782",
-  appId: "1:626617995782:web:f417ecfcc8b41aea106987",
-  measurementId: "G-DC0PXF6FN1"
-};
+import { firebaseConfig } from './config';
 
 firebase.initializeApp(firebaseConfig);
 // Get a reference to the Firestore database
