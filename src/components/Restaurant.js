@@ -11,9 +11,16 @@ const slides = [  '../restaurant1.jpg',  '../restaurant2.jpg',  '../restaurant3.
 const Restaurant = ({ addToCart }) => {
   const location = useLocation();
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedCat, setSelectedCat] = useState(null);
   const [favorites, setFavorites] = useState([]);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [majorCategories, setMajorCategories] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [showCategories, setShowCategories] = useState(false);
+  const [categoriesMeals, setCategoriesMeals] = useState([]);
+  const [filteredCategories, setFilteredCategories] = useState([]);
+  const [meals, setMeals] = useState([]);
+
 
   // Check if location is defined and has a search property
   const searchParams = new URLSearchParams(location.search);
@@ -24,8 +31,13 @@ const Restaurant = ({ addToCart }) => {
 
   const fetchMajorCategories = async () => {
     try {
-      const initialCategories = await majoryCategories(hotelUniqueId, storeUniqueId);
-      setMajorCategories(initialCategories);
+      // const initialCategories = await majoryCategories(hotelUniqueId, storeUniqueId);
+      const { categories, catg, categoriesMeals } = await majoryCategories(hotelUniqueId, storeUniqueId);
+      setMajorCategories(categories);
+      setCategories(catg);
+      setCategoriesMeals(categoriesMeals);
+      
+
     } catch (error) {
       // Handle any errors that occur during the process
       console.error('Error:', error);
@@ -38,8 +50,20 @@ const Restaurant = ({ addToCart }) => {
   
   console.log('majorCategories:', majorCategories);
   
-  const handleMenuClick = (category) => {
+ 
+
+  const handleMajCatClick = (category) => {
+    // const filteredCategories = categories.filter(cat => cat.majorcategories === category.categoryname);
+    const filteredCategories = categories.filter(cat => cat.majorCategories.includes(category.categoryname));
+    setFilteredCategories(filteredCategories);
     setSelectedCategory(category);
+    setShowCategories(true);
+  };
+
+  const handleMenuClick = (category) => {
+    const filteredMeals = categoriesMeals.filter(meal =>meal.categories === category.categoryname);
+    setMeals(filteredMeals);
+    setSelectedCat(category);
   }
 
 
@@ -83,57 +107,67 @@ const Restaurant = ({ addToCart }) => {
           ))}         
         </div>
         <div class="container py-5 pl-10 parent-cont pb-16">
-             <h2 className="text-center font-bold pb-2">Menu</h2>
-             <div className='container'>
-             {majorCategories && majorCategories.length > 0 && (
-  <div className='grid grid-cols-4 gap-4'>
-    {majorCategories.map((category, index) => (
-      <div key={index} className='category-item bg-white rounded-lg shadow-lg p-4 flex flex-col items-center'>
-        <div className='category-icon'>
-          <img src={category.icon} alt={category.name} className='rounded-full h-20 w-20' />
-        </div>
-        <div className='category-name mt-2'>
-          {category.available ? (
-            <a href={category.link} className='text-blue-500 hover:underline'>{category.categoryname}</a>
-          ) : (
-            category.categoryname
-          )}
-        </div>
-      </div>
-    ))}
-  </div>
+          <h2 className="text-center font-bold pb-2">Menu</h2>
+          <div className='container'>
+          {majorCategories && majorCategories.length > 0 && (
+          <div className='grid grid-cols-4 gap-4'>
+            {majorCategories.map((category, index) => (
+              <div key={index} className='category-item bg-white rounded-lg shadow-lg p-4 flex flex-col items-center'>
+                <div className='category-icon'>
+                  <img src={category.icon} alt={category.name} className='rounded-full h-20 w-20' />
+                </div>
+                <div className='category-name mt-2'>
+                  {category.available ? (
+                    <a href={category.link} className='text-blue-500 hover:underline'>{category.categoryname}</a>
+                  ) : (
+                    category.categoryname
+                  )}
+                </div>
+              </div>
+          ))}
+       </div>
 )}
 
 </div>
-
-            {/* <div class="flex flex-wrap justify-center men-category">
-                {MENU_ITEMS.map(item => (
-                    <button
+  {showCategories && filteredCategories && filteredCategories.length > 0 && (
+    <div class="flex flex-wrap justify-center men-category">
+      {filteredCategories.map((category, index) => (
+        <button
+          key={index}
+          className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-full mx-2"
+          onClick={() => handleMenuClick(category)}
+          >
+          {item.category}
+        </button> 
+      ))}
+                {/* {MENU_ITEMS.map(item => ( */}
+                    {/* <button
                     key={item.id}
                     className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-full mx-2"
                     onClick={() => handleMenuClick(item.category)}
                     >
                     {item.category}
-                    </button>
-                ))}
+                    </button> */}
+                {/* ))} */}
             </div>
+)}
             <div className='container '>
-              {selectedCategory && (
+            {showCategories && meals && meals.length > 0 && (
                 <ul className="list-none mt-4">
-                  {MENU_ITEMS.find(item => item.category === selectedCategory)?.items.map((item, index) => (
+                  {meals.map((meal, index) => (
                     <li key={index} className="border border-gray-300 rounded-lg p-2 mt-4">
-                      <Link to={`/item/${item.id}`}>
+                      <Link to={`/menu/${meal.mealitemid}`}>
                       <div class="single-menu-item mt-30 sub22" >
                         <div class="item-details">
                           <div class="menu-thumb">
-                          <img src="https://www.creative-tim.com/learning-lab/tailwind-starter-kit/img/team-3-800x800.jpg" alt="..." class="shadow-lg rounded object-cover w-16 h-16 border-none" />
+                          <img src="{meal.images}" alt="{meal.itemname}" class="shadow-lg rounded object-cover w-16 h-16 border-none" />
                           
                           </div>
                             <div class="menu-content ml-30">
-                                <h2 className='text-2xl font-medium title-font mb-2 chacha'>{item.name}</h2>
+                                <h2 className='text-2xl font-medium title-font mb-2 chacha'>{meal.mealitemname}</h2>
                                 
-                                <p>{item.description}</p>
-                                <h3 class='menu-price chacha'>KSh {item.price}</h3>
+                                <p>{meal.description}</p>
+                                <h3 class='menu-price chacha'>KSh {meal.price}</h3>
                             </div>
                         </div>
   
@@ -144,7 +178,7 @@ const Restaurant = ({ addToCart }) => {
                   ))}
                 </ul>
               )}
-            </div> */}
+            </div>
 
         </div>
 

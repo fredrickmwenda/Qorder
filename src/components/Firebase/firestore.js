@@ -111,38 +111,7 @@ export const checkCollectionExists = async (parentCollection, nestedCollection) 
   }
 };
 
-// export const majoryCategories = async(hoteluniqueid, storeuniqueid) => {
-//   try {
-//     const hotelQuery = query(hotelsCollection, where('hoteluniqueid', '==', hoteluniqueid));
-//     const hotelsSnapshot = await getDocs(hotelQuery);
-//     const hotelDoc = hotelsSnapshot.docs[0];
-//     const storeLocationQuery = query(collection(hotelDoc.ref, 'storelocations'), where('storeuniqueid', '==', storeuniqueid));
-//     const storeLocationSnapshot = await getDocs(storeLocationQuery);
 
-//     const storeLocationDoc = storeLocationSnapshot.docs[0];
-//     const majorCategoriesRef = collection(hotelDoc.ref, 'storelocations', storeLocationDoc.id, 'majorcategories');
-
-//     const unsubscribe = onSnapshot(majorCategoriesRef, (snapshot) => {
-//       const categories = [];
-//       snapshot.forEach((doc) => {
-//         categories.push(doc.data());
-//       });
-
-//       // Do something with the updated categories array
-//       console.log('Updated Categories:', categories);
-//     });
-
-//     // Return the unsubscribe function
-//     return unsubscribe;
-//   } catch (error) {
-//     // Handle any errors that occur during the process
-//     console.error('Error locating the hotel:', error);
-//     toast.error('Error locating the hotel', {
-//       // Error handling options
-//     });
-//     return null;
-//   }
-// };
 
 export const majoryCategories = async (hoteluniqueid, storeuniqueid) => {
   try {
@@ -154,19 +123,35 @@ export const majoryCategories = async (hoteluniqueid, storeuniqueid) => {
 
     const storeLocationDoc = storeLocationSnapshot.docs[0];
     const majorCategoriesRef = collection(hotelDoc.ref, 'storelocations', storeLocationDoc.id, 'majorcategories');
-
+    const categoriesRef = collection(hotelDoc.ref, 'storelocations', storeLocationDoc.id, 'categories')
+    const mealsRef =  collection(hotelDoc.ref, 'storelocations', storeLocationDoc.id, 'meals')
     const majorCategoriesQuery = query(majorCategoriesRef);
+    const mealsQuery = query(mealsRef)
+    const categoriesQuery = query(categoriesRef);
     const categoriesSnapshot = await getDocs(majorCategoriesQuery);
+    const catgSnapshot = await getDocs(categoriesRef);
+    const mealsSnapshot = await getDocs(mealsRef)
 
     const categories = [];
     categoriesSnapshot.forEach((doc) => {
       categories.push(doc.data());
     });
 
+    const catg = [];
+    catgSnapshot.forEach((doc) => {
+      catg.push(doc.data());
+    });
+     
+    const categoriesMeals = [];
+    mealsSnapshot.forEach((doc) => {
+      categoriesMeals.push(doc.data());
+    });
     // Do something with the categories array
-    console.log('Categories:', categories);
+    console.log('Major Categories:', categories);
+    console.log('Categories', catg);
+    console.log('Categories Meals',  categoriesMeals)
 
-    return categories;
+    return {categories, catg, categoriesMeals}
   } catch (error) {
     // Handle any errors that occur during the process
     console.error('Error locating the hotel:', error);

@@ -109,17 +109,17 @@ export default function Item({addToCart}) {
     }
   }, []);
 
-  const handleFavoriteClick = (item) => {
-    const index = favorites.findIndex((favoriteItem) => favoriteItem.id === item.id);
+  const handleFavoriteClick = (meal) => {
+    const index = favorites.findIndex((favoriteItem) => favoriteItem.id === meal.itemid);
      
     if (index === -1) {
       // item doesn't exist in favorites, so add it
       setFavorites([...favorites, {
-        id: item.id,
-        name: item.name,
-        description: item.description,
-        image: item.image,
-        price: item.price
+        id: meal.itemid,
+        name: meal.itemname,
+        description: meal.description,
+        image: meal.images,
+        price: meal.price
       }]);
     } else {
       // item already exists in favorites, so remove it
@@ -209,14 +209,14 @@ export default function Item({addToCart}) {
             <div className="sm:col-span-8 lg:col-span-7">
               {/* <h2 className="text-sm font-medium text-gray-900">{product.name}</h2> */}
               <div class="flex justify-between">
-                <h2 class="text-3xl font-bold text-gray-900 sm:pr-12">{item.name}</h2>
+                <h2 class="text-3xl font-bold text-gray-900 sm:pr-12">{meal.itemname}</h2>
               </div>
               <div class="text-left">
                 <p class="text-2xl text-gray-900">
                   <span>Category:</span> {categories}</p>
               </div>
               <div class="text-left">
-                <p class="text-3xl font-bold text-gray-900">Ksh {item.price}</p>
+                <p class="text-3xl font-bold text-gray-900">Ksh {meal.price}</p>
               </div>
               
 
@@ -234,7 +234,7 @@ export default function Item({addToCart}) {
                   <h3 className="sr-only">Description</h3>
 
                   <div className="space-y-6">
-                    <p className="text-base text-left text-gray-900">{item.description}</p>
+                    <p className="text-base text-left text-gray-900">{meal.description}</p>
                   </div>
                 </div>
               </section>
