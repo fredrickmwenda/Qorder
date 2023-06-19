@@ -114,7 +114,7 @@ function App() {
               <Route path="*" element={<NotFound />}> </Route>
               <Route exact path='/' element={<QRScannerComponent/>}> </Route>
               <Route  path="/home" element={<Restaurant addToCart={addToCart} />}> </Route>
-              <Route path="/item/:id" element={<Item addToCart={addToCart} />} />
+              <Route path="/meal/:id" element={<Item addToCart={addToCart} />} />
               <Route path="/orderhistory" element={<OrderHistory/>}></Route>
               <Route path="/wishlist" element={<Wishlist addToCart={addToCart}/>}> </Route>
               <Route path="/enquiry" element={<Enquiry />}> </Route>
@@ -135,7 +135,7 @@ function App() {
             <Routes>
             <Route exact path='/' element={<QRScannerComponent/>}> </Route>
               <Route  path="/home" element={<Restaurant addToCart={addToCart} />}> </Route>
-              <Route path="/item/:id" element={<Item addToCart={addToCart} />} />
+              <Route path="/meal/:id" element={<Item addToCart={addToCart} />} />
               <Route path="/login" element={<Login />}> </Route>
               <Route path="/register" element={<Register/>}></Route>
               <Route path="/wishlist" element={<Wishlist  addToCart={addToCart}/>}> </Route>

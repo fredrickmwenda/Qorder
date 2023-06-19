@@ -85,13 +85,13 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
-export default function Item({addToCart}) {
+export default function Item({addToCart, clickedMeal}) {
   // const [selectedColor, setSelectedColor] = useState(product.colors[0])
   const [selectedSize, setSelectedSize] = useState(product.sizes[2])
   const [expanded, setExpanded] = useState(null);
   const [favorites, setFavorites] = useState([]);
   const [selectedImage, setSelectedImage] = useState(product.images[0].src);
-  const [item, setItem] = useState(null);
+  const [meal, setItem] = useState(null);
   const [categories, setCategories] = useState([]);
   const [otherItems, setOtherItems] = useState([]);
   const { id } = useParams();
@@ -137,6 +137,42 @@ export default function Item({addToCart}) {
 
 
 
+ 
+
+  // ...
+  // useEffect(() => {
+  //   // Fetch item details and categories
+  //   const fetchItemDetails = async () => {
+  //     try {
+  //       console.log(id);
+  //       // Find the item with the matching ID in MENU_ITEMS
+  //       const foundItem = MENU_ITEMS.flatMap(category => category.items).find(item => item.id === parseInt(id));
+  //       if (foundItem) {
+  //         const foundCategory = MENU_ITEMS.find(category => category.items.includes(foundItem));
+  //         setItem(foundItem);
+  //         setCategories([foundCategory.category])
+  //         // setCategories(MENU_ITEMS.map(category => category.category));
+  //         const otherItems = foundCategory.items.filter(item => item.id !== foundItem.id);
+  //         setOtherItems(otherItems)
+  //         console.log('Other items:', otherItems);
+  //       } else {
+  //         console.log('Not found');
+  //       }
+  //     } catch (error) {
+  //       console.error('Error fetching item details:', error);
+  //     }
+  //   };
+  
+  //   fetchItemDetails();
+  // }, [id]);
+  
+  
+  if (!clickedMeal) {
+    return <div>Loading...</div>;
+  }
+  console.log(categories)
+
+
   const toggleAccordion = (index) => {
     if (expanded === index) {
         // console.log(index)
@@ -146,45 +182,6 @@ export default function Item({addToCart}) {
       setExpanded(index);
     }
   };
-
- 
-
-  // ...
-  useEffect(() => {
-    // Fetch item details and categories
-    const fetchItemDetails = async () => {
-      try {
-        console.log(id);
-        // Find the item with the matching ID in MENU_ITEMS
-        const foundItem = MENU_ITEMS.flatMap(category => category.items).find(item => item.id === parseInt(id));
-        if (foundItem) {
-          const foundCategory = MENU_ITEMS.find(category => category.items.includes(foundItem));
-          setItem(foundItem);
-          setCategories([foundCategory.category])
-          // setCategories(MENU_ITEMS.map(category => category.category));
-          const otherItems = foundCategory.items.filter(item => item.id !== foundItem.id);
-          setOtherItems(otherItems)
-          console.log('Other items:', otherItems);
-        } else {
-          console.log('Not found');
-        }
-      } catch (error) {
-        console.error('Error fetching item details:', error);
-      }
-    };
-  
-    fetchItemDetails();
-  }, [id]);
-  
-  
-  if (!item) {
-    // console.log(item)
-    return <div>Loading...</div>;
-  }
-  console.log(categories)
-
-
-  
 
   return (
     <div className="bg-white">
@@ -223,9 +220,9 @@ export default function Item({addToCart}) {
               <section aria-labelledby="information-heading" className="mt-2">
                 <div className="mt-6">
                   <div className="flex items-center">
-                    <button className="restaurant-item-favorite-button" onClick={() => handleFavoriteClick(item)}>
+                    <button className="restaurant-item-favorite-button" onClick={() => handleFavoriteClick(clickedMeal)}>
                       <div className="restaurant-item-favorite mr-4">
-                      <UilHeart className={`restaurant-item-favorite-icon 4 ${favorites.some((favoriteItem) => favoriteItem.id === item.id) ? 'favorite-icon-red' : ''}`}/>
+                      <UilHeart className={`restaurant-item-favorite-icon 4 ${favorites.some((favoriteItem) => favoriteItem.id === clickedMeal.itemid) ? 'favorite-icon-red' : ''}`}/>
                       </div>
                   </button>
                   </div>
@@ -311,7 +308,7 @@ export default function Item({addToCart}) {
                   <button
                     type="submit"
                     className="mt-6 flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                    onClick={() => addToCart(item)}
+                    onClick={() => addToCart(clickedMeal)}
                   >
                     <UilShoppingCart className="inline-block mr-2"/>
                     Add to Cart

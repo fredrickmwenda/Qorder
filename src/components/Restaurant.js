@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { MENU_ITEMS } from '../menu.js';
 import {  db } from '../Firebase/auth';
-import { collection, query, where, onSnapshot, updateDoc, doc } from "firebase/firestore";
+import { collection, query, where, onSnapshot, updateDoc, doc, connectFirestoreEmulator } from "firebase/firestore";
 import "./Style.css";
 import { majoryCategories } from './Firebase/firestore';
 
@@ -20,6 +20,7 @@ const Restaurant = ({ addToCart }) => {
   const [categoriesMeals, setCategoriesMeals] = useState([]);
   const [filteredCategories, setFilteredCategories] = useState([]);
   const [meals, setMeals] = useState([]);
+  const [clickedMeal, setClickedMeal] = useState(null);
 
 
   // Check if location is defined and has a search property
@@ -53,15 +54,34 @@ const Restaurant = ({ addToCart }) => {
  
 
   const handleMajCatClick = (category) => {
-    // const filteredCategories = categories.filter(cat => cat.majorcategories === category.categoryname);
-    const filteredCategories = categories.filter(cat => cat.majorCategories.includes(category.categoryname));
+    console.log('Categories:', categories);
+    console.log('Category Name:', category.categoryname);
+    
+    const filteredCategories = categories.filter(cat => {
+      console.log('Category:', cat);
+      console.log('Major Categories:', cat.majorcategories);
+      console.log('Includes:', cat.majorcategories && cat.majorcategories.includes(category.categoryname));
+      return cat.majorcategories && cat.majorcategories.includes(category.categoryname);
+    });
+  
+    console.log('Filtered Categories:', filteredCategories);
+  
     setFilteredCategories(filteredCategories);
     setSelectedCategory(category);
     setShowCategories(true);
   };
+  
+  
+
+  const handleMealClick = (meal) => {
+    setClickedMeal(meal);
+  };
 
   const handleMenuClick = (category) => {
+    console.log('the category:', category)
+
     const filteredMeals = categoriesMeals.filter(meal =>meal.categories === category.categoryname);
+    console.log('filtered meals: ', filteredMeals);
     setMeals(filteredMeals);
     setSelectedCat(category);
   }
@@ -107,56 +127,47 @@ const Restaurant = ({ addToCart }) => {
           ))}         
         </div>
         <div class="container py-5 pl-10 parent-cont pb-16">
-          <h2 className="text-center font-bold pb-2">Menu</h2>
-          <div className='container'>
-          {majorCategories && majorCategories.length > 0 && (
-          <div className='grid grid-cols-4 gap-4'>
-            {majorCategories.map((category, index) => (
-              <div key={index} className='category-item bg-white rounded-lg shadow-lg p-4 flex flex-col items-center'>
-                <div className='category-icon'>
-                  <img src={category.icon} alt={category.name} className='rounded-full h-20 w-20' />
+          {/* <h2 className="text-center font-bold pb-2">Menu</h2> */}
+          <div className='container' id="data-set">
+          {!showCategories && majorCategories && majorCategories.length > 0 && (
+                    <div className='grid grid-cols-4 gap-4'>
+                      {majorCategories.map((category, index) => (
+                        <div key={index} className='category-item bg-white rounded-lg shadow-lg p-4 flex flex-col items-center' onClick={() => handleMajCatClick(category)}>
+                          <div className='category-icon'>
+                            <img src={category.icon} alt={category.name} className='rounded-full h-20 w-20' />
+                          </div>
+                          <div className='category-name mt-2'>
+                            {category.available ? (
+                              <a href={category.link} className='text-blue-500 hover:underline'>{category.categoryname}</a>
+                            ) : (
+                              category.categoryname
+                            )}
+                          </div>
+                        </div>
+                    ))}
                 </div>
-                <div className='category-name mt-2'>
-                  {category.available ? (
-                    <a href={category.link} className='text-blue-500 hover:underline'>{category.categoryname}</a>
-                  ) : (
-                    category.categoryname
-                  )}
-                </div>
-              </div>
-          ))}
-       </div>
+          )}
+        </div>
+        {showCategories && filteredCategories && filteredCategories.length > 0 && (
+  <div className="flex flex-wrap justify-center men-category">
+    {filteredCategories.map((category, index) => (
+      <button
+        key={index}
+        className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-full mx-2"
+        onClick={() => handleMenuClick(category)}
+      >
+        {category.categoryname}
+      </button> 
+    ))}
+  </div>
 )}
 
-</div>
-  {showCategories && filteredCategories && filteredCategories.length > 0 && (
-    <div class="flex flex-wrap justify-center men-category">
-      {filteredCategories.map((category, index) => (
-        <button
-          key={index}
-          className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-full mx-2"
-          onClick={() => handleMenuClick(category)}
-          >
-          {item.category}
-        </button> 
-      ))}
-                {/* {MENU_ITEMS.map(item => ( */}
-                    {/* <button
-                    key={item.id}
-                    className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-full mx-2"
-                    onClick={() => handleMenuClick(item.category)}
-                    >
-                    {item.category}
-                    </button> */}
-                {/* ))} */}
-            </div>
-)}
             <div className='container '>
             {showCategories && meals && meals.length > 0 && (
                 <ul className="list-none mt-4">
                   {meals.map((meal, index) => (
                     <li key={index} className="border border-gray-300 rounded-lg p-2 mt-4">
-                      <Link to={`/menu/${meal.mealitemid}`}>
+                      <Link to={`/menu/${meal.mealitemid}`} key={meal.mealitemid} onClick={() => handleMealClick(meal)}>
                       <div class="single-menu-item mt-30 sub22" >
                         <div class="item-details">
                           <div class="menu-thumb">
