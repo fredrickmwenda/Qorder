@@ -124,7 +124,7 @@ export const majoryCategories = async (hoteluniqueid, storeuniqueid) => {
     const storeLocationDoc = storeLocationSnapshot.docs[0];
     const majorCategoriesRef = collection(hotelDoc.ref, 'storelocations', storeLocationDoc.id, 'majorcategories');
     const categoriesRef = collection(hotelDoc.ref, 'storelocations', storeLocationDoc.id, 'categories')
-    const mealsRef =  collection(hotelDoc.ref, 'storelocations', storeLocationDoc.id, 'meals')
+    const mealsRef =  collection(hotelDoc.ref, 'storelocations', storeLocationDoc.id, 'menu')
     const majorCategoriesQuery = query(majorCategoriesRef);
     const mealsQuery = query(mealsRef)
     const categoriesQuery = query(categoriesRef);
@@ -147,8 +147,8 @@ export const majoryCategories = async (hoteluniqueid, storeuniqueid) => {
       categoriesMeals.push(doc.data());
     });
     // Do something with the categories array
-    console.log('Major Categories:', categories);
-    console.log('Categories', catg);
+    //console.log('Major Categories:', categories);
+    // console.log('Categories', catg);
     console.log('Categories Meals',  categoriesMeals)
 
     return {categories, catg, categoriesMeals}

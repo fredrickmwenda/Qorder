@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { UilHeart, UilShoppingCart } from '@iconscout/react-unicons';
 import { MENU_ITEMS } from '../menu.js';
 import {  db } from '../Firebase/auth';
 import { collection, query, where, onSnapshot, updateDoc, doc, connectFirestoreEmulator } from "firebase/firestore";
@@ -28,7 +29,14 @@ const Restaurant = ({ addToCart }) => {
   const hotelUniqueId = searchParams.get('hotelId');
   console.log(hotelUniqueId);
   const storeUniqueId = searchParams.get('storeLocationId');
-  
+
+  useEffect(() => {
+    const favoritesStr = localStorage.getItem('favorites');
+    console.log(favoritesStr);
+    if (favoritesStr) {
+      setFavorites(JSON.parse(favoritesStr));
+    }
+  }, []);
 
   const fetchMajorCategories = async () => {
     try {
@@ -49,7 +57,8 @@ const Restaurant = ({ addToCart }) => {
     fetchMajorCategories();
   }, []);
   
-  console.log('majorCategories:', majorCategories);
+  // console.log('majorCategories:', majorCategories);
+  // console.log('meals', categoriesMeals);
   
  
 
@@ -77,10 +86,36 @@ const Restaurant = ({ addToCart }) => {
     setClickedMeal(meal);
   };
 
-  const handleMenuClick = (category) => {
-    console.log('the category:', category)
+  const handleFavoriteClick = (meal) => {
+    const index = favorites.findIndex((favoriteItem) => favoriteItem.id === meal.menuitemid);
+     
+    if (index === -1) {
+      // item doesn't exist in favorites, so add it
+      setFavorites([...favorites, {
+        id: meal.menuitemid,
+        name: meal.menuitemname,
+        description: meal.description,
+        image: meal.images,
+        price: meal.price
+      }]);
+    } else {
+      // item already exists in favorites, so remove it
+      const newFavoriteItems = [...favorites];
+      newFavoriteItems.splice(index, 1);
+      setFavorites(newFavoriteItems);
+    }
 
-    const filteredMeals = categoriesMeals.filter(meal =>meal.categories === category.categoryname);
+  };
+
+  const handleMenuClick = (category) => {
+    console.log('the menu click category:', category)
+    console.log('Category', category.categoryname);
+
+    const filteredMeals = categoriesMeals.filter(menu =>{
+      console.log('meal', menu);
+      console.log('meal category', menu.categories);
+      return menu.categories.includes(category.categoryname);
+    });
     console.log('filtered meals: ', filteredMeals);
     setMeals(filteredMeals);
     setSelectedCat(category);
@@ -149,47 +184,79 @@ const Restaurant = ({ addToCart }) => {
           )}
         </div>
         {showCategories && filteredCategories && filteredCategories.length > 0 && (
-  <div className="flex flex-wrap justify-center men-category">
-    {filteredCategories.map((category, index) => (
-      <button
-        key={index}
-        className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-full mx-2"
-        onClick={() => handleMenuClick(category)}
-      >
-        {category.categoryname}
-      </button> 
-    ))}
-  </div>
-)}
-
-            <div className='container '>
-            {showCategories && meals && meals.length > 0 && (
+          <div>
+            <div className="flex items-center">
+              <button
+                className=" text-white font-bold py-2 px-4 rounded-full ml-2"
+                onClick={() => setShowCategories(false)}
+              >
+                {/* <i className="fas fa-arrow-left mr-2"></i>  */}
+                <img src="/back-arrow.svg" className='mr-2 w-20 h-10'/>
+              </button>
+            </div>
+            <div className="flex flex-wrap justify-center men-category">
+              {filteredCategories.map((category, index) => (
+                <button
+                  key={index}
+                  className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-full mx-2 mb-3"
+                  onClick={() => handleMenuClick(category)}
+                >
+                  {category.categoryname}
+                </button> 
+              ))}
+            </div>
+            {/* Meals Container */}
+            <div className="container">
+              {showCategories && meals && meals.length > 0 && (
                 <ul className="list-none mt-4">
                   {meals.map((meal, index) => (
                     <li key={index} className="border border-gray-300 rounded-lg p-2 mt-4">
-                      <Link to={`/menu/${meal.mealitemid}`} key={meal.mealitemid} onClick={() => handleMealClick(meal)}>
-                      <div class="single-menu-item mt-30 sub22" >
-                        <div class="item-details">
-                          <div class="menu-thumb">
-                          <img src="{meal.images}" alt="{meal.itemname}" class="shadow-lg rounded object-cover w-16 h-16 border-none" />
-                          
-                          </div>
-                            <div class="menu-content ml-30">
-                                <h2 className='text-2xl font-medium title-font mb-2 chacha'>{meal.mealitemname}</h2>
-                                
-                                <p>{meal.description}</p>
-                                <h3 class='menu-price chacha'>KSh {meal.price}</h3>
+                     
+                        <div class="single-menu-item mt-30 sub22">
+                        <Link to={`/menu/${meal.menuitemid}`} key={meal.menuitemid} onClick={() => handleMealClick(meal)}>
+                          <div class="item-details">
+                            <div class="menu-thumb">
+                              <img src={meal.images} alt={meal.menuitemname} class="shadow-lg rounded object-cover w-16 h-16 border-none" />
                             </div>
+                            <div class="menu-content ml-30">
+                              <h2 className="text-2xl font-medium title-font mb-2 chacha">{meal.menuitemname}</h2>
+                              <p>{meal.description}</p>
+                              {meal.sizeoption == "singlesize" && (
+                                <h3 className="menu-price chacha">KSh {meal.price}</h3>
+                              )}
+                              {/* <h3 class="menu-price chacha">KSh {meal.price}</h3> */}
+                            </div>
+                          </div>
+                          </Link>
+                          {meal.sizeoption == "singlesize" && (
+                            <div class="rest-like-cart">
+                        <div class="rest">
+                        <button className="restaurant-item-favorite-button" onClick={() => handleFavoriteClick(meal)}>
+                          <div className="restaurant-item-favorite mr-4">
+                            <UilHeart className={`restaurant-item-favorite-icon 4 ${favorites.some((favoriteItem) => favoriteItem.id === meal.menuitemid) ? 'favorite-icon-red' : ''}`}/>
+                          </div>
+                        </button>
+                        <div class="ml-4">
+                          <button class="bg-yellow-400 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded" onClick={() => addToCart(meal)}>
+                            <UilShoppingCart className="inline-block mr-2" />
+                            <span class="hidden-cart md:inline-block">Add to Cart</span>
+                          </button>
                         </div>
-  
-
+                        </div>
                       </div>
-                      </Link>                  
+                          )}
+
+                        </div>
+                      {/* </Link> */}
                     </li>
                   ))}
                 </ul>
               )}
             </div>
+          </div>
+        )}
+
+
 
         </div>
 
