@@ -225,13 +225,12 @@ const QRCodeScannerComponent = () => {
           <p>{result}</p>
         </div>
       ) : (
-        <button className="bg-blue-500 rounded-full px-4 py-2 text-white font-semibold hover:bg-blue-600 my-2"
+        <button className="bg-blue-500 rounded-full px-4 py-2 text-white font-semibold hover:bg-blue-600"
         onClick={() => setShowScanner(true)}>Scan QR Code</button>
       )}
 
-      {localStorage.getItem("hotelUniqueId") &&  localStorage.getItem("qrCodeImage") && (
-          // position it in the center
-          <div className="flex justify-center items-center h-full">
+      {localStorage.getItem("hotelUniqueId") &&  localStorage.getItem("qrCodeImage") (
+          <div>
             <p>{hotelName}</p>
             <img
               src={localStorage.getItem("qrCodeImage")}
